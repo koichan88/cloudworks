@@ -1,0 +1,15 @@
+{
+  "name": "cloudworks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync:llm": "node scripts/sync-free-llm-apis.mjs",
+    "env:llm": "node scripts/gen-env-example.mjs",
+    "typecheck": "tsc --noEmit",
+    "example:llm": "node --experimental-strip-types examples/chat.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
