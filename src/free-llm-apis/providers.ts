@@ -35,6 +35,13 @@ export function openAiBaseUrl(p: FreeLlmProvider): string {
   );
 }
 
+/** Providers whose free tier works without an API key (per the catalog notes). */
+export const keylessProviders = new Set([
+  "ovhcloud-ai-endpoints",
+  "llm7-io",
+  "kilo-code",
+]);
+
 export function getProvider(nameOrSlug: string): FreeLlmProvider {
   const s = slug(nameOrSlug);
   const p = providers.find((x) => slug(x.name) === s);

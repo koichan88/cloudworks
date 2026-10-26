@@ -10,7 +10,7 @@
 使い方:
 
     npm install
-    cp .env.example .env   # 使うキーだけ設定
+    cp .env.example .env   # キー不要: ovhcloud-ai-endpoints, llm7-io, kilo-code。他は使うキーだけ設定
     npm run example:llm
 
 更新: `npm run sync:llm` で上流の最新データを取得。無料枠は頻繁に変わるため、利用前に公式ドキュメントで確認すること。

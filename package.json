@@ -6,7 +6,7 @@
     "sync:llm": "node scripts/sync-free-llm-apis.mjs",
     "env:llm": "node scripts/gen-env-example.mjs",
     "typecheck": "tsc --noEmit",
-    "example:llm": "node --experimental-strip-types examples/chat.ts"
+    "example:llm": "node --env-file-if-exists=.env --experimental-strip-types examples/chat.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

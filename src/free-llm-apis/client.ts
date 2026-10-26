@@ -1,4 +1,10 @@
-import { envKey, getProvider, openAiBaseUrl } from "./providers.ts";
+import {
+  envKey,
+  getProvider,
+  keylessProviders,
+  openAiBaseUrl,
+  slug,
+} from "./providers.ts";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -18,14 +24,17 @@ export interface ChatOptions {
 export async function chat(opts: ChatOptions): Promise<string> {
   const provider = getProvider(opts.provider);
   const apiKey = opts.apiKey ?? process.env[envKey(provider.name)];
-  if (!apiKey) {
+  const keyless = keylessProviders.has(slug(provider.name));
+  if (!apiKey && !keyless) {
     throw new Error(`Set ${envKey(provider.name)} (get a key: ${provider.url})`);
   }
   const res = await fetch(`${openAiBaseUrl(provider)}/chat/completions`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
+      ...(apiKey && apiKey !== "anonymous"
+        ? { authorization: `Bearer ${apiKey}` }
+        : {}),
     },
     body: JSON.stringify({
       model: opts.model,
@@ -47,12 +56,17 @@ export async function chat(opts: ChatOptions): Promise<string> {
 export async function chatWithFallback(
   targets: { provider: string; model: string }[],
   messages: ChatMessage[],
+  onError: (target: { provider: string; model: string }, error: Error) => void = (
+    t,
+    e,
+  ) => console.warn(`[fallback] ${t.provider}/${t.model} failed: ${e.message}`),
 ): Promise<{ provider: string; model: string; text: string }> {
   const errors: string[] = [];
   for (const t of targets) {
     try {
       return { ...t, text: await chat({ ...t, messages }) };
     } catch (e) {
+      onError(t, e as Error);
       errors.push(`${t.provider}: ${(e as Error).message}`);
     }
   }
